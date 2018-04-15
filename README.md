@@ -31,140 +31,113 @@ This project is my solution to assignment (1.2) of the Udacity Self Driving Car 
 ---
 ## Goals / Steps
 The goals / steps of this project are the following:
-* Load the data set (see below for links to the project data set)
-* Explore, summarize and visualize the data set
-* Design, train and test a model architecture
-* Use the model to make predictions on new images
-* Analyze the softmax probabilities of the new images
-* Summarize the results with a written report
+* Use the simulator to collect data of good driving behavior
+* Build, a convolution neural network in Keras that predicts steering angles from images
+* Train and validate the model with a training and validation set
+* Test that the model successfully drives around track one without leaving the road
+* Summarize the results with a written
 
 ---
 ## Rubric Points
-### Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/481/view) individually and describe how I addressed each point in my implementation. 
+---
+### Files Submitted & Code Quality
 
-### Writeup / README
-#### 1. Provide a Writeup / README that includes all the rubric points and how you addressed each one.
+#### 1. Submission includes all required files and can be used to run the simulator in autonomous mode
 
-You are reading it and here is a link to my [project code](Traffic_Sign_Classifier.ipynb)
+My project includes the following files:
+* model.py containing the script to create and train the model
+* drive.py for driving the car in autonomous mode
+* model.h5 containing a trained convolution neural network 
+* writeup_report.md or writeup_report.pdf summarizing the results
 
+#### 2. Submission includes functional code
+Using the Udacity provided simulator and my drive.py file, the car can be driven autonomously around the track by executing 
+```sh
+python drive.py model.h5
+```
 
-### Data Set Summary & Exploration
+#### 3. Submission code is usable and readable
 
-#### 1. Provide a basic summary of the data set. In the code, the analysis should be done using python, numpy and/or pandas methods rather than hardcoding results manually.
+The model.py file contains the code for training and saving the convolution neural network. The file shows the pipeline I used for training and validating the model, and it contains comments to explain how the code works.
 
-I used the pandas library to calculate summary statistics of the traffic
-signs data set:
+### Model Architecture and Training Strategy
 
-* The size of training set is 34799
-* The size of the validation set is 4410
-* The size of test set is 12630
-* The shape of a traffic sign image is (32, 32)
-* The number of unique classes/labels in the data set is 43
+#### 1. An appropriate model architecture has been employed
 
-#### 2. Include an exploratory visualization of the dataset.
+My model consists of a convolution neural network with 3x3 filter sizes and depths between 32 and 128 (model.py lines 18-24) 
 
-Below is 10 randomly selected signs from the German traffic signs dataset. As the size of each image is (32, 32), they have relatively low resolution.
+The model includes RELU layers to introduce nonlinearity (code line 20), and the data is normalized in the model using a Keras lambda layer (code line 18). 
+
+#### 2. Attempts to reduce overfitting in the model
+
+The model contains dropout layers in order to reduce overfitting (model.py lines 21). 
+
+The model was trained and validated on different data sets to ensure that the model was not overfitting (code line 10-16). The model was tested by running it through the simulator and ensuring that the vehicle could stay on the track.
+
+#### 3. Model parameter tuning
+
+The model used an adam optimizer, so the learning rate was not tuned manually (model.py line 25).
+
+#### 4. Appropriate training data
+
+Training data was chosen to keep the vehicle driving on the road. I used a combination of center lane driving, recovering from the left and right sides of the road ... 
+
+For details about how I created the training data, see the next section. 
+
+### Model Architecture and Training Strategy
+
+#### 1. Solution Design Approach
+
+The overall strategy for deriving a model architecture was to ...
+
+My first step was to use a convolution neural network model similar to the ... I thought this model might be appropriate because ...
+
+In order to gauge how well the model was working, I split my image and steering angle data into a training and validation set. I found that my first model had a low mean squared error on the training set but a high mean squared error on the validation set. This implied that the model was overfitting. 
+
+To combat the overfitting, I modified the model so that ...
+
+Then I ... 
+
+The final step was to run the simulator to see how well the car was driving around track one. There were a few spots where the vehicle fell off the track... to improve the driving behavior in these cases, I ....
+
+At the end of the process, the vehicle is able to drive autonomously around the track without leaving the road.
+
+#### 2. Final Model Architecture
+
+The final model architecture (model.py lines 18-24) consisted of a convolution neural network with the following layers and layer sizes ...
+
+Here is a visualization of the architecture (note: visualizing the architecture is optional according to the project rubric)
+
 ![alt text][image1]
 
-As an exploratory visualization of sample distribution among the classes, I plot the distribution histogram below. The sample of sign is not balanced, as some signs are more representative then others. However this representativeness proportion is kept among training, validation and testing sample. 
+#### 3. Creation of the Training Set & Training Process
 
-As the sample is not uniformly distributed among the classes it is possible that for some classes we can achieve better prediction than for other classes. As proportions of signs among training, validation and testing samples are relatively constant, we can expect the performance of between training, validation and between training and testing not being biased by sample selection
+To capture good driving behavior, I first recorded two laps on track one using center lane driving. Here is an example image of center lane driving:
+
 ![alt text][image2]
 
+I then recorded the vehicle recovering from the left side and right sides of the road back to center so that the vehicle would learn to .... These images show what a recovery looks like starting from ... :
 
-### Design and Test a Model Architecture
-
-#### 1. Describe how you preprocessed the image data. What techniques were chosen and why did you choose these techniques? Consider including images showing the output of each preprocessing technique. Pre-processing refers to techniques such as converting to grayscale, normalization, etc. (OPTIONAL: As described in the "Stand Out Suggestions" part of the rubric, if you generated additional data for training, describe why you decided to generate additional data, how you generated the data, and provide example images of the additional data. Then describe the characteristics of the augmented training set like number of images in the set, number of images for each class, etc.)
-
-For data preprocessing I allow the option to convert the images to grayscale. This reduces the input data by averaging the 3 color channels (RGB) into one channel. However the validation performance is not necessarily better, as colors in traffic sign (especially red) have a great significance. In the final model I choose, I leave the three channels data as input. The images are normalized by the conventional way of detracting and dividing each pixel x by 128: NormalizedPix = (Pix-128)/128. This can smooth the effect of outlier pixel values.
-
-Overall, not much data preprocessing is applied.
-
-
-#### 2. Describe what your final model architecture looks like including model type, layers, layer sizes, connectivity, etc.) Consider including a diagram and/or table describing the final model.
-
-My final model consisted of the following layers:
-
-| Layer         		|     Description	        					| 
-|:---------------------:|:---------------------------------------------:| 
-| 0. Input         		| 32x32x3 RGB image   							| 
-| 1. Convolution 5x5    | 1x1 stride, valid padding, 	outputs 28x28x9	|
-| RELU					|												|
-| Max pooling	      	| 2x2 stride, 					outputs 14x14x9	|
-| 2. Convolution 3x3	| 1x1 stride, valid padding, 	outputs 12x12x27|
-| RELU					|												|
-| 3. Convolution 4x4    | 1x1 stride, valid padding, 	outputs 9x9x81 	|
-| RELU					|												|
-| Max pooling	      	| 3x3 stride   					outputs 3x3x81  |
-| Flatten				|        						output  729x1	|
-| 4. Fully Connected	|         			 			outputs 291x1 	|
-| RELU					|												|
-| 5. Fully Connected	|        						outputs 116x1 	|
-| RELU					|												|
-| 6. Fully Connected	| outputs number of classes 			43x1	|
-| Softmax				|												|
-
-
-#### 3. Describe how you trained your model. The discussion can include the type of optimizer, the batch size, number of epochs and any hyperparameters such as learning rate.
-
-The following are the training parameters I use:
-``
-EPOCHS = 40
-BATCH_SIZE = 256 
-nchannel = 3
-Optimizer = tf.train.AdamOptimizer(learning_rate = 0.002)
-``
-
-In chosing those parameter values, I reference the experience in training the [MNIST dataset](http://yann.lecun.com/exdb/mnist/) with the LeNet5 architecture. In that case 10 EPOCHS and batch size of 128
-are used and with the Adam (Kingma, Ba, 2014) algorithm the validation performance was 99%. The convolutional network architecture used here is similar to the LeNet5, except that it adds one additional convolutional layer. For handwritten digits, there were only 10 classes and images had one color channel. In this case, for the traffic signs, we have 43 classes with 3 color channels. Therefore I chose higher sampling complexity.
-
-The Adam algorithm stands for adaptive moment. It is a stochastic gradient algorithm that weighs the gradient with its first order moment at each step. I set the learning rate to 0.002, that is somewhat high, to speed up computational time.
-
-
-#### 4. Describe the approach taken for finding a solution and getting the validation set accuracy to be at least 0.93. Include in the discussion the results on the training, validation and test sets and where in the code these were calculated. Your approach may have been an iterative process, in which case, outline the steps you took to get to the final solution and why you chose those steps. Perhaps your solution involved an already well known implementation or architecture. In this case, discuss why you think the architecture is suitable for the current problem.
-
-I tried first the LeNet5 with grayscale signs, achieving only around 80% validation accuracy. Then I chose RGB input channels and increase the filter depth to be multiple 3. This increase the accuracy. I add a convolutional layer, decrease all layer patches to (5x5), (3x3), (4x4) and try both average pooling and max pooling, leading to the current model with validation accuracy 98%.
-
-The validation accuracy for the different EPOCHS is plotted below.
 ![alt text][image3]
-
-Overall, I end up with the current architecture based on intuition (that may be well wrong) rather than solid scientific basis.
-
-
-### Test a Model on New Images
-
-#### 1. Choose five German traffic signs found on the web and provide them in the report. For each image, discuss what quality or qualities might be difficult to classify.
-
-I download 10 images from the web (instead of 5), cropped them and saved them as .png in the [example folder](examples/). The images are found by typing German Traffic Signs in Google image search. They are randomly selected and have a relatively high quality. I then resize them to (32x32). Below are the 10 signs.
 ![alt text][image4]
+![alt text][image5]
 
-Two images belong to the same class and three are speed limit signs. Such a small sample is very unbalanced and can lead to very good or very bad prediction performance.
+Then I repeated this process on track two in order to get more data points.
 
+To augment the data sat, I also flipped images and angles thinking that this would ... For example, here is an image that has then been flipped:
 
-#### 2. Discuss the model's predictions on these new traffic signs and compare the results to predicting on the test set. At a minimum, discuss what the predictions were, the accuracy on these new predictions, and compare the accuracy to the accuracy on the test set (OPTIONAL: Discuss the results in more detail as described in the "Stand Out Suggestions" part of the rubric).
+![alt text][image6]
+![alt text][image7]
 
-Here are the results of the prediction:
+Etc ....
 
-| Image			        |     Prediction	  				| 
-|:---------------------:|:---------------------------------:| 
-| Speed Limit 50      	| Children Crossing   				| 
-| Pedestrian Crossing   | General Caution 					|
-| No Entry				| No Entry							|
-| Pedestrian Crossing	| General Caution	 				|
-| Speed Limit 120		| Roundabout Mandatory				|
-| Stop      			| Stop  							| 
-| Road Work    			| Road Work 						|
-| Roundabout Mandatory	| Roundabout Mandatory				|
-| Speed Limit 70	    | Speed Limit 70					|
-| Yield					| Yield      						|
+After the collection process, I had X number of data points. I then preprocessed this data by ...
 
 
-The model was able to correctly guess 6 of the 10 traffic signs, which gives an accuracy of 60%. This does not compares favorably to the accuracy on the test set of 94%. Two _speed limit_ signs out of three are miss-predicted and the two _pedestrian crossing_ signs are all miss-predicted. 
+I finally randomly shuffled the data set and put Y% of the data into a validation set. 
 
+I used this training data for training the model. The validation set helped determine if the model was over or under fitting. The ideal number of epochs was Z as evidenced by ... I used an adam optimizer so that manually training the learning rate wasn't necessary.
 
-#### 3. Describe how certain the model is when predicting on each of the five new images by looking at the softmax probabilities for each prediction. Provide the top 5 softmax probabilities for each image along with the sign type of each probability. (OPTIONAL: as described in the "Stand Out Suggestions" part of the rubric, visualizations can also be provided such as bar charts)
-
-The code for making predictions on my final model is located in the last cell of the Ipython notebook. The softmax probability for all traffic sign predictions are very high for the top 1 prediction. Below is prediction table with probability for the top 5 prediction:
 
 | Image			        |  Top 1 Prediction	  		|	Prob. of Top 5 Predictions 				| 
 |:---------------------:|:-------------------------:|:-----------------------------------------:|
@@ -179,7 +152,6 @@ The code for making predictions on my final model is located in the last cell of
 | Speed Limit 70	    | Speed Limit 70			| 100%		0%		0% 		0% 		0%		|
 | Yield					| Yield      				| 100%		0%		0% 		0% 		0%		|
 
-When it is correctly predicted the prediction have 100% probability. However even when the prediction have 99.99% probability, the ground true is not correctly predicted as in the first image of speed limit. This pattern is interesting. I leave it open to suggestion for why it is the case.
 
 
 
@@ -189,4 +161,5 @@ When it is correctly predicted the prediction have 100% probability. However eve
 * Udacity Self-Driving Car [Nanodegree](https://www.udacity.com/course/self-driving-car-engineer-nanodegree--nd013) 
 * Udacity project assignment and template on [GitHub](https://github.com/udacity/CarND-Behavioral-Cloning-P3)
 * Udacity project [rubric](https://review.udacity.com/#!/rubrics/432/view)
+* Udacity Driving Simulator[]
 
