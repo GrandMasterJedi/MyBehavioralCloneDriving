@@ -111,7 +111,6 @@ def MyKerasArchitecture(inputShape, NewSyntax = False ):
     else:
         layer1 = Conv2D(9, 6, 6, border_mode='valid', activation = "relu")(layer01)
         layer2 = MaxPooling2D(pool_size=(2,2), border_mode="valid")(layer1)
-        MaxPooling2D()
     
         layer3 = Conv2D(27, 6, 6, border_mode='valid', activation = "relu")(layer2)
         layer4 = MaxPooling2D(pool_size=(2,2), border_mode="valid")(layer3)
