@@ -1,32 +1,27 @@
 [//]: # (Image References)
 
-[image1]: ./example/2_Rand10images.png "Rand10"
-[image2]: ./example/3_SampleDistribution.png "Histogram"
-[image3]: ./example/4_ValidationAccuracy.png "Valid"
-[image4]: ./example/5_SignsFromWeb.png "ExtraSigns"
-
-
+[image1]: ./example/cameras3.png "Cameras3"
+[image2]: ./example/modelError.png "ModelPerf"
 
 
 
 
 # **Behavioral Cloning for Autonomous Driving**  
 
-I build a learner to classify traffic signs from the German dataset using Convolutional Neural Networks as implemented in Tensor Flow. The learner is based on the LeNet5 architecture of LeCun, Y. (2013) 
+I build a learner to drive autonomously a simulation bot. The learner tells the simulation bot the steering angle depending on the images captured by three cameras mounted on the bot.
 
-The validation accuracy is 98%, the testing accuracy is 94%. On a new dataset of 10 traffic signs I downloaded from the web the prediction accuracy is 60%
-
-This project is my solution to assignment (1.2) of the Udacity Self Driving Car Nanodegree. 
+The simulation bot is able to complete autonomously the first track of the Udacity simulator.
 
 ---
 ## Dependencies
+* [Driving Simulator](https://github.com/udacity/self-driving-car-sim)
 * Python 3.x
 * NumPy
 * OpenCV
-* Matplotlib
+* Random
 * Pandas
-* math
-* time
+* sklearn
+* Keras 1.2
 
 ---
 ## Goals / Steps
@@ -45,16 +40,25 @@ The goals / steps of this project are the following:
 #### 1. Submission includes all required files and can be used to run the simulator in autonomous mode
 
 My project includes the following files:
-* model.py containing the script to create and train the model
+* This README.md summarizing the results
+* model.py (or model.ipynb) containing the script to create and train the model
 * drive.py for driving the car in autonomous mode
 * model.h5 containing a trained convolution neural network 
-* writeup_report.md or writeup_report.pdf summarizing the results
+* video.mp4 recording the bot completing the first track
+
 
 #### 2. Submission includes functional code
 Using the Udacity provided simulator and my drive.py file, the car can be driven autonomously around the track by executing 
 ```sh
-python drive.py model.h5
+python drive.py model.h5 resource/run5
 ```
+
+Images of the ride are saved in the directory _resource/run5_.The _video.mp4_ is generated as:
+```sh
+python video.py resource/run5
+cp resource/run5.mp4 video.mp4
+```
+
 
 #### 3. Submission code is usable and readable
 
@@ -102,32 +106,64 @@ The final step was to run the simulator to see how well the car was driving arou
 
 At the end of the process, the vehicle is able to drive autonomously around the track without leaving the road.
 
+![alt text][image2]
+
+
 #### 2. Final Model Architecture
 
 The final model architecture (model.py lines 18-24) consisted of a convolution neural network with the following layers and layer sizes ...
 
-Here is a visualization of the architecture (note: visualizing the architecture is optional according to the project rubric)
+____________________________________________________________________________________________________
+Layer (type)                     Output Shape          Param #     Connected to                     
+====================================================================================================
+input_1 (InputLayer)             (None, 160, 320, 3)   0                                            
+____________________________________________________________________________________________________
+lambda_1 (Lambda)                (None, 160, 320, 3)   0           input_1[0][0]                    
+____________________________________________________________________________________________________
+cropping2d_1 (Cropping2D)        (None, 80, 320, 3)    0           lambda_1[0][0]                   
+____________________________________________________________________________________________________
+convolution2d_1 (Convolution2D)  (None, 75, 315, 9)    981         cropping2d_1[0][0]               
+____________________________________________________________________________________________________
+maxpooling2d_1 (MaxPooling2D)    (None, 37, 157, 9)    0           convolution2d_1[0][0]            
+____________________________________________________________________________________________________
+convolution2d_2 (Convolution2D)  (None, 32, 152, 27)   8775        maxpooling2d_1[0][0]             
+____________________________________________________________________________________________________
+maxpooling2d_3 (MaxPooling2D)    (None, 16, 76, 27)    0           convolution2d_2[0][0]            
+____________________________________________________________________________________________________
+convolution2d_3 (Convolution2D)  (None, 11, 71, 81)    78813       maxpooling2d_3[0][0]             
+____________________________________________________________________________________________________
+maxpooling2d_4 (MaxPooling2D)    (None, 5, 35, 81)     0           convolution2d_3[0][0]            
+____________________________________________________________________________________________________
+convolution2d_4 (Convolution2D)  (None, 3, 33, 81)     59130       maxpooling2d_4[0][0]             
+____________________________________________________________________________________________________
+flatten_1 (Flatten)              (None, 8019)          0           convolution2d_4[0][0]            
+____________________________________________________________________________________________________
+dense_1 (Dense)                  (None, 200)           1604000     flatten_1[0][0]                  
+____________________________________________________________________________________________________
+dense_2 (Dense)                  (None, 50)            10050       dense_1[0][0]                    
+____________________________________________________________________________________________________
+dense_3 (Dense)                  (None, 1)             51          dense_2[0][0]                    
+====================================================================================================
+Total params: 1,761,800
+Trainable params: 1,761,800
+Non-trainable params: 0
+____________________________________________________________________________________________________
 
-![alt text][image1]
+
+
 
 #### 3. Creation of the Training Set & Training Process
 
 To capture good driving behavior, I first recorded two laps on track one using center lane driving. Here is an example image of center lane driving:
 
-![alt text][image2]
+
+![alt text][image1]
 
 I then recorded the vehicle recovering from the left side and right sides of the road back to center so that the vehicle would learn to .... These images show what a recovery looks like starting from ... :
-
-![alt text][image3]
-![alt text][image4]
-![alt text][image5]
 
 Then I repeated this process on track two in order to get more data points.
 
 To augment the data sat, I also flipped images and angles thinking that this would ... For example, here is an image that has then been flipped:
-
-![alt text][image6]
-![alt text][image7]
 
 Etc ....
 
@@ -139,18 +175,9 @@ I finally randomly shuffled the data set and put Y% of the data into a validatio
 I used this training data for training the model. The validation set helped determine if the model was over or under fitting. The ideal number of epochs was Z as evidenced by ... I used an adam optimizer so that manually training the learning rate wasn't necessary.
 
 
-| Image			        |  Top 1 Prediction	  		|	Prob. of Top 5 Predictions 				| 
-|:---------------------:|:-------------------------:|:-----------------------------------------:|
-| Speed Limit 50      	| Children Crossing   		| 99.99% 	0%		0% 		0% 		0%		|
-| Pedestrian Crossing   | General Caution 			| 99.97% 	0.03% 	0% 		0% 		0%		|
-| No Entry				| No Entry					| 100%		0%		0% 		0% 		0%		|
-| Pedestrian Crossing	| General Caution	 		| 87.56% 	6.74% 	4.73% 	0.86% 	0.09%	|
-| Speed Limit 120		| Roundabout Mandatory		| 73.88%	21.81%	4.2%	0.06%   0.03%	|
-| Stop      			| Stop  					| 100%		0%		0% 		0% 		0% 		|
-| Road Work    			| Road Work 				| 100%		0%		0% 		0% 		0%		|
-| Roundabout Mandatory	| Roundabout Mandatory		| 100%		0%		0% 		0% 		0%		|
-| Speed Limit 70	    | Speed Limit 70			| 100%		0%		0% 		0% 		0%		|
-| Yield					| Yield      				| 100%		0%		0% 		0% 		0%		|
+
+
+
 
 
 
@@ -161,5 +188,5 @@ I used this training data for training the model. The validation set helped dete
 * Udacity Self-Driving Car [Nanodegree](https://www.udacity.com/course/self-driving-car-engineer-nanodegree--nd013) 
 * Udacity project assignment and template on [GitHub](https://github.com/udacity/CarND-Behavioral-Cloning-P3)
 * Udacity project [rubric](https://review.udacity.com/#!/rubrics/432/view)
-* Udacity Driving Simulator[]
+* Udacity Driving Simulator on [GitHub](https://github.com/udacity/self-driving-car-sim)
 
