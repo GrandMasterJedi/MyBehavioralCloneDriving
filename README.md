@@ -130,11 +130,10 @@ The final model architecture (model.py, lines 18-24) consisted of a convolution 
 | dense_1 (Dense)                  | (None, 200)           | 1604000     | flatten_1[0][0]         |         
 | dense_2 (Dense)                  | (None, 50)            | 10050       | dense_1[0][0]           |         
 | dense_3 (Dense)                  | (None, 1)             | 51          | dense_2[0][0]           |         
-|:--------------------------------:|:---------------------:|:-----------:|------------------------:|
+|__________________________________________________________________________________________________|
 | Total params: 1,761,800
 | Trainable params: 1,761,800
 | Non-trainable params: 0
-|:--------------------------------:|:---------------------:|:-----------:|------------------------:|
 
 
 The training and validation error for each epoch is as below:
